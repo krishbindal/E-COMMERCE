@@ -3,8 +3,13 @@ import { notFound } from "next/navigation";
 import { BuyButton } from "@/components/ui/buy-button";
 import { getProjectById } from "@/lib/sanity";
 
-export default async function ProjectDetail({ params }: { params: { id: string } }) {
-  const project = await getProjectById(params.id);
+type ProjectDetailProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function ProjectDetail({ params }: ProjectDetailProps) {
+  const { id } = await params;
+  const project = await getProjectById(id);
 
   if (!project) {
     notFound();
