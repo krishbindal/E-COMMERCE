@@ -1,17 +1,16 @@
+import { ProjectsGrid } from "@/components/ui/projects-grid";
 import { getAllProjects } from "@/lib/sanity";
-import { ProjectCard } from "@/components/ui/project-card";
 
 export default async function ProjectsPage() {
   const projects = await getAllProjects();
 
   return (
-    <section>
-      <h1 className="mb-6 text-3xl font-bold">Marketplace Projects</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <ProjectCard key={project._id} project={project} />
-        ))}
+    <section className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-semibold sm:text-4xl">Explore Projects</h1>
+        <p className="mt-2 text-zinc-400">Filter by category and price to find the perfect project quickly.</p>
       </div>
+      <ProjectsGrid projects={projects} />
     </section>
   );
 }

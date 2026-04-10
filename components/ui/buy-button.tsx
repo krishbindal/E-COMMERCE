@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useToast } from "@/components/ui/toast-provider";
 
 declare global {
   interface Window {
@@ -32,12 +33,15 @@ const loadRazorpay = async () => {
 
 export const BuyButton = ({ projectId, amount, title }: Props) => {
   const { user, getIdToken } = useAuth();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const onBuy = async () => {
     if (!user) {
-      setMessage("Please login before purchasing.");
+      const text = "Please login before purchasing.";
+      setMessage(text);
+      showToast(text, "error");
       return;
     }
 
@@ -85,11 +89,15 @@ export const BuyButton = ({ projectId, amount, title }: Props) => {
 
           const verify = await verifyRes.json();
           if (!verifyRes.ok) {
-            setMessage(verify.error || "Payment verification failed");
+            const text = verify.error || "Payment verification failed";
+            setMessage(text);
+            showToast(text, "error");
             return;
           }
 
-          setMessage("Payment successful. Check your email for the download link.");
+          const text = "Payment successful. Check your email for the download link.";
+          setMessage(text);
+          showToast(text, "success");
         },
         prefill: {
           email: user.email || "",
@@ -100,22 +108,20 @@ export const BuyButton = ({ projectId, amount, title }: Props) => {
 
       razorpay.open();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Payment failed");
+      const text = error instanceof Error ? error.message : "Payment failed";
+      setMessage(text);
+      showToast(text, "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-2">
-      <button
-        onClick={onBuy}
-        disabled={loading}
-        className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 disabled:opacity-60"
-      >
+    <div className="space-y-3">
+      <button onClick={onBuy} disabled={loading} className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60">
         {loading ? "Processing..." : `Buy for ₹${amount}`}
       </button>
-      {message && <p className="text-sm text-zinc-300">{message}</p>}
+      {message && <p className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm text-zinc-300">{message}</p>}
     </div>
   );
 };
