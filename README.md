@@ -1,6 +1,6 @@
 # Student Project Marketplace
 
-Full-stack production-ready marketplace built with Next.js 14 App Router, TypeScript, Tailwind CSS, Sanity, Razorpay, Firebase, Firestore, and Resend.
+Full-stack production-ready marketplace built with Next.js 15 App Router, TypeScript, Tailwind CSS, Sanity, Razorpay, Firebase, Firestore, and Resend.
 
 ## Features
 
