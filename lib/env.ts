@@ -1,0 +1,38 @@
+const getEnv = (key: string) => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${key}`);
+  }
+  return value;
+};
+
+export const env = {
+  NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID,
+  SANITY_DATASET: process.env.SANITY_DATASET,
+  SANITY_API_VERSION: process.env.SANITY_API_VERSION || "2024-01-01",
+  SANITY_TOKEN: process.env.SANITY_TOKEN,
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+  NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+  FROM_EMAIL: process.env.FROM_EMAIL,
+  FIREBASE_ADMIN_PROJECT_ID: process.env.FIREBASE_ADMIN_PROJECT_ID,
+  FIREBASE_ADMIN_CLIENT_EMAIL: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+  FIREBASE_ADMIN_PRIVATE_KEY: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
+};
+
+export const requiredServerEnv = () => ({
+  razorpayKeyId: getEnv("RAZORPAY_KEY_ID"),
+  razorpayKeySecret: getEnv("RAZORPAY_KEY_SECRET"),
+  resendApiKey: getEnv("RESEND_API_KEY"),
+  fromEmail: getEnv("FROM_EMAIL"),
+  adminEmail: getEnv("ADMIN_EMAIL"),
+});
