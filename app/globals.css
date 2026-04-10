@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  @apply border-white/10;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  @apply text-white antialiased;
+  background:
+    radial-gradient(1200px 600px at 10% -20%, rgba(75, 85, 99, 0.25), transparent 70%),
+    radial-gradient(1000px 500px at 110% 10%, rgba(59, 130, 246, 0.15), transparent 65%),
+    linear-gradient(180deg, #0a0a0a 0%, #050505 40%, #020202 100%);
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-white/10 bg-white/[0.04] shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-xl;
+  }
+
+  .muted-text {
+    @apply text-zinc-300;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-white via-zinc-300 to-zinc-500 bg-clip-text text-transparent;
+  }
+
+  .input-luxury {
+    @apply w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-sm text-white outline-none transition focus:border-white/40 focus:ring-2 focus:ring-white/10;
+  }
+
+  .btn-primary {
+    @apply rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:bg-zinc-100;
+  }
+
+  .btn-secondary {
+    @apply rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 450ms ease-out;
+}
