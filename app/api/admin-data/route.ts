@@ -9,13 +9,36 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const [ordersSnapshot, requestsSnapshot] = await Promise.all([
-      getAdminDb().collection("orders").orderBy("createdAt", "desc").get(),
-      getAdminDb().collection("customRequests").orderBy("createdAt", "desc").get(),
-    ]);
+    const db = getAdminDb();
+    let ordersSnapshot;
+    let requestsSnapshot;
 
-    const orders = ordersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    const requests = requestsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    try {
+      [ordersSnapshot, requestsSnapshot] = await Promise.all([
+        db.collection("orders").orderBy("createdAt", "desc").get(),
+        db.collection("customRequests").orderBy("createdAt", "desc").get(),
+      ]);
+    } catch {
+      [ordersSnapshot, requestsSnapshot] = await Promise.all([
+        db.collection("orders").get(),
+        db.collection("customRequests").get(),
+      ]);
+    }
+
+    const orders = ordersSnapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => {
+        const aTime = new Date(String((a as { createdAt?: string }).createdAt || 0)).getTime();
+        const bTime = new Date(String((b as { createdAt?: string }).createdAt || 0)).getTime();
+        return bTime - aTime;
+      });
+    const requests = requestsSnapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => {
+        const aTime = new Date(String((a as { createdAt?: string }).createdAt || 0)).getTime();
+        const bTime = new Date(String((b as { createdAt?: string }).createdAt || 0)).getTime();
+        return bTime - aTime;
+      });
 
     return NextResponse.json({ orders, requests });
   } catch (error) {

@@ -23,7 +23,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const amount = Math.round(project.price * 100);
+    const price = Number(project.price);
+    if (!Number.isFinite(price) || price <= 0) {
+      return NextResponse.json({ error: "Invalid project price" }, { status: 400 });
+    }
+
+    const amount = Math.round(price * 100);
     const razorpay = getRazorpay();
     const order = await razorpay.orders.create({
       amount,

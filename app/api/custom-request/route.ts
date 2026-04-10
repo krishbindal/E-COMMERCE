@@ -19,27 +19,30 @@ export async function POST(request: NextRequest) {
 
     await getAdminDb().collection("customRequests").add(payload);
 
-    const resend = getResend();
     const fromEmail = process.env.FROM_EMAIL;
     const adminEmail = process.env.ADMIN_EMAIL;
 
-    if (!fromEmail || !adminEmail) {
-      throw new Error("Email environment variables missing");
+    if (fromEmail && adminEmail) {
+      try {
+        const resend = getResend();
+
+        await resend.emails.send({
+          from: fromEmail,
+          to: adminEmail,
+          subject: `New custom project request from ${payload.name}`,
+          html: `<p>Email: ${payload.email}</p><p>Phone: ${payload.phone}</p><p>Budget: ${payload.budget}</p><p>Deadline: ${payload.deadline}</p><p>${payload.description}</p>`,
+        });
+
+        await resend.emails.send({
+          from: fromEmail,
+          to: payload.email,
+          subject: "We received your custom project request",
+          html: `<p>Hi ${payload.name},</p><p>Your custom project request has been received. We will contact you soon.</p>`,
+        });
+      } catch (emailError) {
+        console.error("Failed to send custom request emails", emailError);
+      }
     }
-
-    await resend.emails.send({
-      from: fromEmail,
-      to: adminEmail,
-      subject: `New custom project request from ${payload.name}`,
-      html: `<p>Email: ${payload.email}</p><p>Phone: ${payload.phone}</p><p>Budget: ${payload.budget}</p><p>Deadline: ${payload.deadline}</p><p>${payload.description}</p>`,
-    });
-
-    await resend.emails.send({
-      from: fromEmail,
-      to: payload.email,
-      subject: "We received your custom project request",
-      html: `<p>Hi ${payload.name},</p><p>Your custom project request has been received. We will contact you soon.</p>`,
-    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

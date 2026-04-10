@@ -47,27 +47,30 @@ export async function POST(request: NextRequest) {
 
     const project = await getProjectById(projectId);
     if (project) {
-      const resend = getResend();
       const fromEmail = process.env.FROM_EMAIL;
       const adminEmail = process.env.ADMIN_EMAIL;
 
-      if (!fromEmail || !adminEmail) {
-        throw new Error("Email environment variables missing");
+      if (fromEmail && adminEmail) {
+        try {
+          const resend = getResend();
+
+          await resend.emails.send({
+            from: fromEmail,
+            to: user.email,
+            subject: `Your project download: ${project.title}`,
+            html: `<p>Payment successful for <strong>${project.title}</strong>.</p><p>Download link: <a href="${project.fileUrl}">${project.fileUrl}</a></p>`,
+          });
+
+          await resend.emails.send({
+            from: fromEmail,
+            to: adminEmail,
+            subject: `New order received - ${project.title}`,
+            html: `<p>${user.email} purchased ${project.title}.</p><p>Payment ID: ${razorpay_payment_id}</p>`,
+          });
+        } catch (emailError) {
+          console.error("Failed to send order emails", emailError);
+        }
       }
-
-      await resend.emails.send({
-        from: fromEmail,
-        to: user.email,
-        subject: `Your project download: ${project.title}`,
-        html: `<p>Payment successful for <strong>${project.title}</strong>.</p><p>Download link: <a href="${project.fileUrl}">${project.fileUrl}</a></p>`,
-      });
-
-      await resend.emails.send({
-        from: fromEmail,
-        to: adminEmail,
-        subject: `New order received - ${project.title}`,
-        html: `<p>${user.email} purchased ${project.title}.</p><p>Payment ID: ${razorpay_payment_id}</p>`,
-      });
     }
 
     return NextResponse.json({ success: true });

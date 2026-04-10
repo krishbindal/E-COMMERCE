@@ -7,6 +7,7 @@ import { useAuth } from "@/components/providers/auth-provider";
 export const ProtectedAdmin = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const allowedEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   useEffect(() => {
     if (loading) return;
@@ -15,17 +16,16 @@ export const ProtectedAdmin = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const allowedEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-    if (!allowedEmail || user.email !== allowedEmail) {
+    if (allowedEmail && user.email !== allowedEmail) {
       router.push("/");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, allowedEmail]);
 
   if (loading) {
     return <p className="p-6 text-zinc-300">Checking access...</p>;
   }
 
-  if (!user || user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+  if (!user || (allowedEmail && user.email !== allowedEmail)) {
     return null;
   }
 

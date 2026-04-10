@@ -9,13 +9,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const snapshot = await getAdminDb()
-      .collection("orders")
-      .where("userId", "==", user.uid)
-      .orderBy("createdAt", "desc")
-      .get();
+    const db = getAdminDb();
+    let snapshot;
 
-    const orders = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    try {
+      snapshot = await db
+        .collection("orders")
+        .where("userId", "==", user.uid)
+        .orderBy("createdAt", "desc")
+        .get();
+    } catch {
+      snapshot = await db.collection("orders").where("userId", "==", user.uid).get();
+    }
+
+    const orders = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => {
+        const aTime = new Date(String((a as { createdAt?: string }).createdAt || 0)).getTime();
+        const bTime = new Date(String((b as { createdAt?: string }).createdAt || 0)).getTime();
+        return bTime - aTime;
+      });
     return NextResponse.json({ orders });
   } catch (error) {
     return NextResponse.json(
